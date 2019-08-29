@@ -1,7 +1,7 @@
 class LinksController < ApplicationController
   
 	def index
-		@links = Link.order(:hits).all
+		@links = Link.order(:hits).reverse
 		render :index
 	end
 
@@ -9,18 +9,23 @@ class LinksController < ApplicationController
 		query = params[:search]
 		link  = Link.where(name: query).first
 
-		if link && link.url
+		if link.name == 'sales'
+			@links = Link.where("lower(name) LIKE ?", "%sales%").limit(100)
+			render :index
+		elsif link && link.url
 			hit(link)
 			redirect_to link.url
 		else
-			sub_query = query[0..2]
-			@links = Link.where("lower(name) LIKE ? OR lower(name) LIKE ?", "%#{query}%", "%#{sub_query}%").limit(100)
+			includes_sales = query.include?("sales")
+			if includes_sales
+				@links = Link.where("lower(name) LIKE ? OR lower(name) LIKE ?", "%#{query.downcase}%", "%sales%").limit(100)
+			else
+				sub_query = query[0..2]
+				@links = Link.where("lower(name) LIKE ? OR lower(name) LIKE ?", "%#{query.downcase}%", "%#{sub_query.downcase}%").limit(100)
+			end
 			render :index
 		end
 	end
-
-	def show
-  	end
 
 	def new
 	    @link = Link.new
@@ -56,12 +61,6 @@ class LinksController < ApplicationController
       	link.hits += 1
       end
       link.save(:validate => false)
-    end
-
-    def validate
-      super
-      errors.add(:name, 'cannot be empty') if !name || name.empty?
-      errors.add(:url, 'cannot be empty') if !url || url.empty?
     end
 
     def link_params
