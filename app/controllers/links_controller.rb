@@ -13,7 +13,8 @@ class LinksController < ApplicationController
 			hit(link)
 			redirect_to link.url
 		else
-			@links = Link.where("lower(name) LIKE ?", "%#{query}%")
+			sub_query = query[0..2]
+			@links = Link.where("lower(name) LIKE ? OR lower(name) LIKE ?", "%#{query}%", "%#{sub_query}%").limit(100)
 			render :index
 		end
 	end
@@ -30,7 +31,12 @@ class LinksController < ApplicationController
 		exists = Link.where(name: link_params[:name]).exists?
 	    @link = Link.new(link_params)
 
-		if exists
+	    uri = URI.parse('http://'+link_params[:url])
+
+	    if !['http','https'].include?(uri.scheme)
+	    	@notice = "Not a real URL"
+			render :new  
+		elsif exists
 			@notice = "Link Aready Exists"
 			render :new    	
 		elsif @link.save
