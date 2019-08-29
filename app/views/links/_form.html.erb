@@ -1,0 +1,11 @@
+<%= form_tag '/link' do %>
+  Name<br>
+  <%= text_field_tag :name %><br>
+  <small class="form-text text-muted">what comes after go/, e.g. put "commissions" for "go/commissions"</small><br>
+  URL<br>
+  <%= text_field_tag :url %><br>
+  <small class="form-text text-muted">where you would like the go/ link to redirect to</small><br>
+  <%= submit_tag "Submit", class: "btn btn-primary" %>
+<% end %>
+<br>
+<%= link_to 'Home', '/', :class => "btn btn-outline-primary"%>

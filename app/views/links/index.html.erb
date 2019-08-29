@@ -1,0 +1,30 @@
+<div class="card text-white bg-primary">
+  <div class="card-body">
+    <div class="card-text" style="display: inline-block">
+      <div style="margin-right: 3px; display: inline-block">Didn't find what you were looking for? Create a new go/ link</div>
+      <a href="/new" style="color: white">
+        <div class="btn btn-light">here</div>
+      </a>
+    </div>
+  </div>
+</div>
+<br><br>
+<h2>popular go/ links</h2>
+<table class="table table-striped">
+  <thead>
+    <tr>
+      <th>Popularity</th>
+      <th>Name</th>
+      <th>URL</th>
+    </tr>
+  </thead>
+  <tbody>
+    <% @links.last(100).each do |link| %>
+      <tr>
+      	<td><%= link.hits || 0 %></td>
+        <td><%= link.name %></td>
+        <td><%= link.url[0..99] %></td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>
